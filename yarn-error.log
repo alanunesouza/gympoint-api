@@ -1,0 +1,32 @@
+Arguments: 
+  /home/alan/.nvm/versions/node/v10.16.3/bin/node /home/alan/.nvm/versions/node/v10.16.3/bin/yarn add eslint eslint-config-airbnb-base eslint-config-prettier eslint-plugin-import eslint-plugin-prettier nodemon prettier sequelize-cli sucrase -D
+
+PATH: 
+  /home/alan/.nvm/versions/node/v10.16.3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/alan/Android/Sdk/tools:/home/alan/Android/Sdk/platform-tools:/home/alan/Android/Sdk/tools:/home/alan/Android/Sdk/platform-tools:/home/alan/Android/Sdk/tools:/home/alan/Android/Sdk/platform-tools
+
+Yarn version: 
+  1.17.3
+
+Node version: 
+  10.16.3
+
+Platform: 
+  linux x64
+
+Trace: 
+  Error: getaddrinfo ENOTFOUND registry.yarnpkg.com registry.yarnpkg.com:443
+      at GetAddrInfoReqWrap.onlookup [as oncomplete] (dns.js:56:26)
+
+npm manifest: 
+  {
+    "name": "gympoint-api",
+    "version": "1.0.0",
+    "main": "index.js",
+    "license": "MIT"
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
