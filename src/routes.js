@@ -7,6 +7,8 @@ import authMiddleware from './app/middlewares/auth';
 import StudentController from './app/controllers/StudentController';
 import PlanController from './app/controllers/PlanController';
 import RegistrationController from './app/controllers/RegistrationController';
+import CheckinController from './app/controllers/CheckinController';
+import HelpOrderController from './app/controllers/HelpOrderController';
 
 const routes = new Router();
 
@@ -19,6 +21,14 @@ routes.put('/users', UserController.update);
 
 routes.post('/students', StudentController.store);
 routes.put('/students', StudentController.update);
+
+routes.post('/students/:studentId/checkins', CheckinController.store);
+routes.get('/students/:studentId/checkins', CheckinController.index);
+
+routes.post('/students/:studentId/help-orders', HelpOrderController.store);
+routes.get('/students/:studentId/help-orders', HelpOrderController.index);
+
+routes.post('/help-oders/:helpOrderId/answer', HelpOrderController.answer);
 
 routes.post('/plans', PlanController.store);
 routes.get('/plans', PlanController.index);
