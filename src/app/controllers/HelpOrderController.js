@@ -3,6 +3,8 @@ import * as Yup from 'yup';
 import Student from '../models/Student';
 import HelpOrder from '../models/HelpOrder';
 
+import Mail from '../../lib/Mail';
+
 class HelpOrderController {
   async store(req, res) {
     const schema = Yup.object().shape({
@@ -15,9 +17,7 @@ class HelpOrderController {
 
     const { studentId } = req.params;
 
-    const student = await Student.findOne({
-      where: { id: studentId },
-    });
+    const student = await Student.findByPk(studentId);
 
     if (!student) {
       return res.status(400).json({ error: 'This user is not a provider' });
@@ -68,20 +68,24 @@ class HelpOrderController {
     const { helpOrderId } = req.params;
     const { answer } = req.body;
 
-    const helpOrder = await HelpOrder.findByPk(helpOrderId, {
-      attributes: { exclude: ['created_at', 'updated_at'] },
-      include: [
-        {
-          model: Student,
-          as: 'student',
-          attributes: ['name', 'email'],
-        },
-      ],
-    });
+    const helpOrder = await HelpOrder.findByPk(helpOrderId);
+
+    const student = await Student.findByPk(helpOrder.student_id);
 
     await helpOrder.update({
       answer,
       answer_at: new Date(),
+    });
+
+    await Mail.sendMail({
+      to: `${student.name} <${student.email}>`,
+      subject: 'Sua pergunta foi respondida',
+      template: 'answer',
+      context: {
+        student: student.name,
+        question: helpOrder.question,
+        answer: helpOrder.answer,
+      },
     });
 
     return res.json(helpOrder);

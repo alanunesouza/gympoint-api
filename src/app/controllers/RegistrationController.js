@@ -70,7 +70,7 @@ class RegistrationController {
         },
         {
           model: Plan,
-          as: 'student',
+          as: 'plan',
           attributes: ['id', 'title'],
         },
       ],
