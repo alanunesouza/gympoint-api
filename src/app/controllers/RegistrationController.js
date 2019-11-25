@@ -75,6 +75,7 @@ class RegistrationController {
         },
       ],
     });
+
     return res.json(registrations);
   }
 

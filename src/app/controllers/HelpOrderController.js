@@ -4,6 +4,8 @@ import Student from '../models/Student';
 import HelpOrder from '../models/HelpOrder';
 
 import Mail from '../../lib/Mail';
+import Queue from '../../lib/Queue';
+import AnswerMail from '../jobs/AnswerMail';
 
 class HelpOrderController {
   async store(req, res) {
@@ -68,24 +70,24 @@ class HelpOrderController {
     const { helpOrderId } = req.params;
     const { answer } = req.body;
 
-    const helpOrder = await HelpOrder.findByPk(helpOrderId);
-
-    const student = await Student.findByPk(helpOrder.student_id);
+    const helpOrder = await HelpOrder.findByPk(helpOrderId, {
+      attributes: { exclude: ['created_at', 'updated_at'] },
+      include: [
+        {
+          model: Student,
+          as: 'student',
+          attributes: ['name', 'email'],
+        },
+      ],
+    });
 
     await helpOrder.update({
       answer,
       answer_at: new Date(),
     });
 
-    await Mail.sendMail({
-      to: `${student.name} <${student.email}>`,
-      subject: 'Sua pergunta foi respondida',
-      template: 'answer',
-      context: {
-        student: student.name,
-        question: helpOrder.question,
-        answer: helpOrder.answer,
-      },
+    await Queue.add(AnswerMail.key, {
+      helpOrder,
     });
 
     return res.json(helpOrder);
