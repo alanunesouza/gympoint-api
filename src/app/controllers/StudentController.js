@@ -93,10 +93,23 @@ class StudentController {
           [Op.like]: name ? `%${name}%` : '%%',
         },
       },
-      attributes: ['name', 'email', 'age', 'weight'],
+      attributes: ['id', 'name', 'email', 'age', 'weight'],
     });
 
     return res.json(students);
+  }
+
+  async delete(req, res) {
+    const { studentId } = req.params;
+    const student = await Student.findByPk(studentId);
+
+    if (!student) {
+      res.status(404).json({ error: 'Student not found' });
+    }
+
+    await student.destroy();
+
+    return res.json({ message: `student ${studentId} was deleted` });
   }
 }
 
