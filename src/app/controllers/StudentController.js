@@ -61,18 +61,6 @@ class StudentController {
       return res.status(400).json({ error: 'Validation fails' });
     }
 
-    if (req.body.email) {
-      const studentExists = await Student.findOne({
-        where: { email: req.body.email },
-      });
-
-      if (studentExists) {
-        return res
-          .status(400)
-          .json({ error: 'This e-mail is already registered' });
-      }
-    }
-
     const student = await Student.findByPk(req.body.student_id);
 
     if (!student) {
@@ -86,8 +74,21 @@ class StudentController {
 
   async index(req, res) {
     const { name } = req.query;
+    const { studentId } = req.params;
+    let students;
 
-    const students = await Student.findAll({
+    if (studentId) {
+      students = await Student.findOne({
+        where: {
+          id: studentId,
+        },
+        attributes: ['id', 'name', 'email', 'age', 'weight', 'height'],
+      });
+
+      return res.json(students);
+    }
+
+    students = await Student.findAll({
       where: {
         name: {
           [Op.like]: name ? `%${name}%` : '%%',
