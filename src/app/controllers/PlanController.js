@@ -38,9 +38,24 @@ class PlanController {
   }
 
   async index(req, res) {
-    const plans = await Plan.findAll({
+    const { planId } = req.params;
+    let plans;
+
+    if (planId) {
+      plans = await Plan.findOne({
+        where: {
+          id: planId,
+        },
+        attributes: ['id', 'title', 'duration', 'price'],
+      });
+
+      return res.json(plans);
+    }
+
+    plans = await Plan.findAll({
       attributes: ['id', 'title', 'duration', 'price'],
     });
+
     return res.json(plans);
   }
 
