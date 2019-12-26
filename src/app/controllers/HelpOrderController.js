@@ -1,4 +1,5 @@
 import * as Yup from 'yup';
+import { Op } from 'sequelize';
 
 import Student from '../models/Student';
 import HelpOrder from '../models/HelpOrder';
@@ -51,10 +52,61 @@ class HelpOrderController {
       where: { student_id: studentId },
       order: ['created_at'],
       attributes: ['id', 'question', 'answer', 'answer_at'],
+      include: [
+        {
+          model: Student,
+          as: 'student',
+          attributes: ['name', 'email'],
+        },
+      ],
       limit: 20,
       offset: (page - 1) * 20,
     });
 
+    return res.json(helpOrders);
+  }
+
+  async indexAll(req, res) {
+    const include = [
+      {
+        model: Student,
+        as: 'student',
+        attributes: ['id', 'name'],
+      },
+    ];
+
+    const { page } = req.query;
+
+    if (page) {
+      const limit = 5;
+
+      const plansCount = await HelpOrder.count({
+        where: {
+          answer: null,
+          student_id: {
+            [Op.ne]: null,
+          },
+        },
+      });
+      const hasMoreItens = page * limit >= plansCount;
+
+      const helpOrders = await HelpOrder.findAll({
+        where: {
+          answer: null,
+          student_id: {
+            [Op.ne]: null,
+          },
+        },
+        limit,
+        offset: (page - 1) * limit,
+        include,
+      });
+      return res.json({ hasMoreItens, content: helpOrders });
+    }
+
+    const helpOrders = await HelpOrder.findAll({
+      include,
+    });
     return res.json(helpOrders);
   }
 

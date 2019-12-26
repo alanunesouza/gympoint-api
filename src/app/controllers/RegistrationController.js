@@ -24,10 +24,6 @@ class RegistrationController {
     const { start_date } = req.body;
     const parsedDate = parseISO(start_date);
 
-    if (isBefore(parsedDate, new Date())) {
-      return res.status(400).json({ error: 'Start date is invalid' });
-    }
-
     const alreadyRegistered = await Registration.findOne({
       where: {
         student_id: req.body.student_id,
