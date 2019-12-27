@@ -73,9 +73,11 @@ class StudentController {
   }
 
   async index(req, res) {
-    const { name } = req.query;
+    const { name, page } = req.query;
     const { studentId } = req.params;
     let students;
+    let where = {};
+    const limit = 5;
 
     if (studentId) {
       students = await Student.findOne({
@@ -88,12 +90,25 @@ class StudentController {
       return res.json(students);
     }
 
+    if (page) {
+      where = name ? { name: { [Op.iLike]: `%${name}%` } } : {};
+
+      const studentsCount = await Student.count({ where });
+
+      const hasMoreItems = !(page * limit >= studentsCount);
+
+      students = await Student.findAll({
+        where,
+        limit,
+        offset: (page - 1) * limit,
+      });
+
+      return res.json({ hasMoreItems, content: students });
+    }
+
     students = await Student.findAll({
-      where: {
-        name: {
-          [Op.like]: name ? `%${name}%` : '%%',
-        },
-      },
+      where,
+      limit,
       attributes: ['id', 'name', 'email', 'age', 'weight'],
     });
 
